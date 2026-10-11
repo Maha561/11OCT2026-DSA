@@ -1,0 +1,200 @@
+# DSA Learning Journal — Increasing and Decreasing Star Pattern
+
+**Date:** October 11, 2026  
+**Pattern:** Increasing stars followed by decreasing stars  
+**Status:** Completed ✅
+
+## 1. The problem I wanted to solve
+
+I wanted to print five rows of increasing stars, followed by four rows of decreasing stars.
+
+```text
+*
+* *
+* * *
+* * * *
+* * * * *
+* * * *
+* * *
+* *
+*
+```
+
+My goal was to solve it using my own logic, with two `for` loops: an outer loop for rows and an inner loop for columns.
+
+## 2. I started by thinking about the loops
+
+I set:
+
+```java
+int n = 5;
+int k = n - 1;
+```
+
+I knew `n` represented the maximum number of stars in the pattern. I also initialized `k` to `n - 1`, which meant `k` started at `4` for the decreasing half.
+
+For the outer loop, I chose:
+
+```java
+for (int i = 1; i <= n * 2 - 1; i++)
+```
+
+Why `n * 2 - 1`? Because the pattern has five increasing rows and four decreasing rows, giving a total of nine rows.
+
+For the inner loop, I used:
+
+```java
+for (int j = 1; j <= 5; j++)
+```
+
+This allowed me to check each column from 1 to 5 in every row.
+
+## 3. I solved the first half independently
+
+My first condition was:
+
+```java
+if (i <= n) {
+    if (j <= i) {
+        System.out.print("* ");
+    } else {
+        System.out.print("  ");
+    }
+}
+```
+
+I separated the pattern into two halves in my mind.
+
+For the first half, `i <= n` identifies the first five rows. Inside those rows, `j <= i` determines whether to print a star. If the column number is greater than the row number, I print spaces.
+
+This gave me the correct increasing half:
+
+```text
+*
+* *
+* * *
+* * * *
+* * * * *
+```
+
+That was my first confirmed success.
+
+## 4. I thought about the decreasing half
+
+After completing the first half, I needed the star count to decrease from four to one.
+
+I already had `k = n - 1`, so I used:
+
+```java
+if (i > n) {
+    if (j <= k) {
+        System.out.print("* ");
+    }
+}
+```
+
+My reasoning was that when `i > n`, the program had entered the second half. There, `j <= k` would control how many stars were printed.
+
+For example, if `k = 4`, columns 1 through 4 would print stars. If `k = 3`, only columns 1 through 3 would print stars.
+
+I had identified the correct condition for the decreasing half.
+
+## 5. My first mistake: decrementing `k` too often
+
+Initially, I placed `k--` inside the inner loop. I thought that once the stars were printed and the remaining columns were spaces, I could decrement `k`.
+
+But the output showed that the number of stars was decreasing too quickly. The reason was that the inner loop runs once for every column, so `k--` was executing multiple times in the same row.
+
+I understood that `k` should decrease only once per row, not once per column.
+
+## 6. I explored where `k--` should go
+
+I considered whether `k--` could go outside the inner loop. At first, I worried that the first half would also decrement `k`.
+
+Then I came up with the idea of adding a condition around the decrement:
+
+```java
+if (i > n) {
+    k--;
+}
+```
+
+I placed this after the inner loop.
+
+That was the key correction.
+
+- During the first half, `i <= n`, so `k` stays at 4.
+- During the second half, `i > n`, so `k` decreases once after each row.
+
+This meant the current row could finish printing before `k` changed for the next row.
+
+## 7. My final working code
+
+```java
+public class Main {
+    public static void main(String[] args) {
+
+        int n = 5;
+        int k = n - 1;
+
+        for (int i = 1; i <= n * 2 - 1; i++) {
+
+            for (int j = 1; j <= 5; j++) {
+
+                // First half
+                if (i <= n) {
+                    if (j <= i) {
+                        System.out.print("* ");
+                    } else {
+                        System.out.print("  ");
+                    }
+                }
+
+                // Second half
+                if (i > n) {
+                    if (j <= k) {
+                        System.out.print("* ");
+                    } else {
+                        System.out.print("  ");
+                    }
+                }
+            }
+
+            if (i > n) {
+                k--;
+            }
+
+            System.out.println();
+        }
+    }
+}
+```
+
+## 8. Final output
+
+```text
+*
+* *
+* * *
+* * * *
+* * * * *
+* * * *
+* * *
+* *
+*
+```
+
+## 9. What I learned from this problem
+
+- The outer loop controls the rows; the inner loop controls the columns.
+- I can divide one pattern into two logical halves using conditions on `i`.
+- The first half uses `j <= i` to increase the stars.
+- The second half uses `j <= k` to decrease the stars.
+- A variable's update position matters. Updating `k` inside the inner loop changes it too many times.
+- By placing `k--` after the inner loop and inside `if (i > n)`, I made it decrease only once per row in the second half.
+
+### My biggest takeaway
+
+**I didn't solve this pattern by memorising code. I solved it by observing the output, testing my conditions, identifying why the star count changed too quickly, and moving the decrement to the correct place.**
+
+That process helped me understand not just *what* to write, but *why* the logic works.
